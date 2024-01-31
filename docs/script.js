@@ -98,11 +98,13 @@ $(document).ready(function () {
         colorChange(".random-text", fontColor);
     }, interval);
     var getRandomSpecialCharInterval = setInterval(function () {
-        generateAndDisplayRandomCharacter(".random-text");
-        placeRandomText(".random-text");
-        fontChange(".random-text", fonts[getRndInteger(0, fonts.length)]);
-        fontSizeChange(".random-text", getRndInteger(50, 80) + "px");
-    }, interval * 2);
+        for (i = 0; i <= 5; i++) {
+            id = "#ran" + i;
+            generateAndDisplayRandomCharacter(id);
+            placeRandomText(id);
+            fontChange(id, fonts[getRndInteger(0, fonts.length)]);
+            fontSizeChange(id, getRndInteger(50, 80) + "px");
+        }, interval * 2);
 });
 
 function colorGenerator() {
