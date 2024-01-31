@@ -28,7 +28,23 @@ function calculateLuminance(color) {
             0
         );
 }
+function getRandomPosition() {
+    var screenWidth = window.innerWidth;
+    var screenHeight = window.innerHeight;
 
+    var randomX = Math.floor(Math.random() * screenWidth);
+    var randomY = Math.floor(Math.random() * screenHeight);
+
+    return { x: randomX, y: randomY };
+}
+
+function placeRandomText(textElement) {
+    var randomPosition = getRandomPosition();
+    $(textElement).css({
+        left: randomPosition.x + "px",
+        top: randomPosition.y + "px"
+    });
+}
 function adjustLuminance(color, targetLuminance) {
     const currentLuminance = calculateLuminance(color);
     const luminanceRatio = targetLuminance / currentLuminance;
@@ -40,6 +56,16 @@ function adjustLuminance(color, targetLuminance) {
 
 function RGBGenerator(numbers) {
     return `rgb(${numbers[0]}, ${numbers[1]}, ${numbers[2]})`;
+}
+function getRandomSpecialCharacter() {
+    var specialCharacters = "!@#$%&*?";
+    var randomIndex = Math.floor(Math.random() * specialCharacters.length);
+    return specialCharacters.charAt(randomIndex);
+}
+
+function generateAndDisplayRandomCharacter(element) {
+    var randomChar = getRandomSpecialCharacter(); // get the random charecter
+    $(element).html("<p>" + randomChar + "</p>"); //put it somewhere nice
 }
 $(document).ready(function () {
     var cur = -1;
@@ -53,22 +79,30 @@ $(document).ready(function () {
         "Permanent Marker",
         "Shadows Into Light"
     ];
+    let interval = 100;
 
     var bodyInterval = setInterval(function () {
-        const contrastRatio = 6;
+        const contrastRatio = 1 / 4.5;
         const bodyColor = colorGenerator();
         const bodyColorRGB = RGBGenerator(bodyColor);
         const fontColor = adjustContrast(bodyColor, contrastRatio);
         const fontColorRGB = RGBGenerator(fontColor);
-        const font = fonts[++cur % fonts.length];
+        const font = fonts[getRndInteger(0, fonts.length)];
 
-        const randomFontSize = getRndInteger(50, 200);
+        const randomFontSize = getRndInteger(50, 80);
 
         fontChange("h3", font);
         backgroundColorChange("body", bodyColorRGB);
         colorChange("h3", fontColorRGB);
         fontSizeChange("h3", randomFontSize + "px");
-    }, 100);
+        colorChange(".random-text", fontColor);
+    }, interval);
+    var getRandomSpecialCharInterval = setInterval(function () {
+        generateAndDisplayRandomCharacter(".random-text");
+        placeRandomText(".random-text");
+        fontChange(".random-text", fonts[getRndInteger(0, fonts.length)]);
+        fontSizeChange(".random-text", getRndInteger(50, 80) + "px");
+    }, interval * 2);
 });
 
 function colorGenerator() {

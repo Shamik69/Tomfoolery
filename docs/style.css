@@ -9,3 +9,8 @@ body {
 h3 {
     text-align: center;
 }
+.random-text {
+    position: absolute;
+    /* colour: #000; */ /* Set your preferred text color */
+    font-size: 16px; /* Set your preferred font size */
+}
