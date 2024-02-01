@@ -104,7 +104,8 @@ $(document).ready(function () {
             placeRandomText(id);
             fontChange(id, fonts[getRndInteger(0, fonts.length)]);
             fontSizeChange(id, getRndInteger(50, 80) + "px");
-        }, interval * 2);
+        }
+    }, interval * 2);
 });
 
 function colorGenerator() {
