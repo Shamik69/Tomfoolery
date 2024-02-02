@@ -1,16 +1,33 @@
 body {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     margin: 0;
 }
 
+main {
+    flex: 1;
+}
+
 h3 {
     text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
+
 .random-text {
     position: absolute;
-    /* colour: #000; */ /* Set your preferred text color */
+    /* color: #000; */ /* Set your preferred text color */
     font-size: 16px; /* Set your preferred font size */
+}
+
+footer {
+    text-align: right;
+    padding: 10px;
+    /* background-color: #f0f0f0; */
+    font-family: 'cute-font', sans-serif; /* Replace 'cute-font' with the actual cute font you want to use */
 }

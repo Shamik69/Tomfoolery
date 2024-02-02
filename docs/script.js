@@ -1,18 +1,21 @@
-function backgroundColorChange(element, color) {
+function setBackgroundColor(element, color) {
     $(element).css("background-color", color);
 }
 
-function colorChange(element, color) {
+function setTextColor(element, color) {
     $(element).css("color", color);
 }
 
-function fontChange(element, font) {
+function setFont(element, font) {
     $(element).css("font-family", font);
 }
-function fontSizeChange(element, fontSize) {
+
+function setFontSize(element, fontSize) {
     $(element).css("font-size", fontSize);
+    console.log(fontSize);
 }
-function getRndInteger(min, max) {
+
+function getRandomInteger(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
@@ -28,48 +31,54 @@ function calculateLuminance(color) {
             0
         );
 }
+
 function getRandomPosition() {
-    var screenWidth = window.innerWidth;
-    var screenHeight = window.innerHeight;
-
-    var randomX = Math.floor(Math.random() * screenWidth);
-    var randomY = Math.floor(Math.random() * screenHeight);
-
-    return { x: randomX, y: randomY };
+    return {
+        x: getRandomInteger(0, window.innerWidth),
+        y: getRandomInteger(0, window.innerHeight)
+    };
 }
 
-function placeRandomText(textElement) {
-    var randomPosition = getRandomPosition();
+function replaceRandomLetter(str) {
+    let strArray = str.split("");
+    let n = getRandomInteger(0, strArray.length);
+    let replacementLetter = getRandomSpecialCharacter();
+    if (strArray != " ") {
+        strArray[n] = replacementLetter;
+    }
+    return strArray.join("");
+}
+
+function setRandomTextPosition(textElement) {
+    let randomPosition = getRandomPosition();
     $(textElement).css({
         left: randomPosition.x + "px",
         top: randomPosition.y + "px"
     });
 }
-function adjustLuminance(color, targetLuminance) {
+
+function adjustColorLuminance(color, targetLuminance) {
     const currentLuminance = calculateLuminance(color);
     const luminanceRatio = targetLuminance / currentLuminance;
-
     return color.map(value =>
         Math.min(255, Math.max(0, value * luminanceRatio))
     );
 }
 
-function RGBGenerator(numbers) {
+function generateRGB(numbers) {
     return `rgb(${numbers[0]}, ${numbers[1]}, ${numbers[2]})`;
 }
+
 function getRandomSpecialCharacter() {
-    var specialCharacters = "!@#$%&*?";
-    var randomIndex = Math.floor(Math.random() * specialCharacters.length);
+    const specialCharacters = "!@#$%&*?";
+    const randomIndex = getRandomInteger(0, specialCharacters.length);
     return specialCharacters.charAt(randomIndex);
 }
-
-function generateAndDisplayRandomCharacter(element) {
-    var randomChar = getRandomSpecialCharacter(); // get the random charecter
-    $(element).html("<p>" + randomChar + "</p>"); //put it somewhere nice
+function setRandomCharacter(element) {
+    const randomChar = getRandomSpecialCharacter();
+    $(element).html("<p>" + randomChar + "</p>");
 }
 $(document).ready(function () {
-    var cur = -1;
-    const x = 20;
     const fonts = [
         "Architects Daughter",
         "Caveat",
@@ -79,37 +88,45 @@ $(document).ready(function () {
         "Permanent Marker",
         "Shadows Into Light"
     ];
-    let interval = 100;
-
-    var bodyInterval = setInterval(function () {
-        const contrastRatio = 1 / 4.5;
+    const contrastRatio = 1 / 4.5;
+    const interval = 100;
+    function updateBodyStyles() {
         const bodyColor = colorGenerator();
-        const bodyColorRGB = RGBGenerator(bodyColor);
-        const fontColor = adjustContrast(bodyColor, contrastRatio);
-        const fontColorRGB = RGBGenerator(fontColor);
-        const font = fonts[getRndInteger(0, fonts.length)];
+        const bodyColorRGB = generateRGB(bodyColor);
+        const fontColor = adjustColorLuminance(bodyColor, contrastRatio);
+        const fontColorRGB = generateRGB(fontColor);
 
-        const randomFontSize = getRndInteger(50, 80);
+        setBackgroundColor("body", bodyColorRGB);
+        setTextColor("h3", fontColorRGB);
+        setTextColor(
+            "footer",
+            generateRGB(adjustColorLuminance(colorGenerator(), contrastRatio))
+        );
+        setTextColor(".random-text", fontColor);
+    }
+    function updateRandomCharacters() {
+        const font = fonts[getRandomInteger(0, fonts.length)];
+        const randomFontSize = getRandomInteger(100, 600);
+        setFont("h3", font);
+        setFont("footer", font);
+        $("#main-text").html(replaceRandomLetter("FUCK YOU"));
+        setFontSize("#main-text", randomFontSize + "%");
+        for (let i = 0; i <= 5; i++) {
+            const id = "#randomText" + i;
 
-        fontChange("h3", font);
-        backgroundColorChange("body", bodyColorRGB);
-        colorChange("h3", fontColorRGB);
-        fontSizeChange("h3", randomFontSize + "px");
-        colorChange(".random-text", fontColor);
-    }, interval);
-    var getRandomSpecialCharInterval = setInterval(function () {
-        for (i = 0; i <= 5; i++) {
-            id = "#ran" + i;
-            generateAndDisplayRandomCharacter(id);
-            placeRandomText(id);
-            fontChange(id, fonts[getRndInteger(0, fonts.length)]);
-            fontSizeChange(id, getRndInteger(50, 80) + "px");
+            setRandomCharacter(id);
+            setRandomTextPosition(id);
+            setFont(id, fonts[getRandomInteger(0, fonts.length)]);
+            setFontSize(id, getRandomInteger(10, 200) + "%");
         }
-    }, interval * 2);
+    }
+
+    setInterval(updateBodyStyles, interval);
+    setInterval(updateRandomCharacters, interval * 2.5);
 });
 
 function colorGenerator() {
-    return Array.from({ length: 3 }, () => getRndInteger(0, 256));
+    return Array.from({ length: 3 }, () => getRandomInteger(0, 256));
 }
 
 function adjustContrast(originalColor, targetContrastRatio) {
@@ -120,5 +137,5 @@ function adjustContrast(originalColor, targetContrastRatio) {
             : (luminanceOriginal + 0.05) * targetContrastRatio - 0.05;
 
     const luminanceTargetAdjusted = Math.min(1, Math.max(0, luminanceTarget));
-    return adjustLuminance(originalColor, luminanceTargetAdjusted);
+    return adjustColorLuminance(originalColor, luminanceTargetAdjusted);
 }
